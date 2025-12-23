@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Girlfriends Cup</title>
+    <style>
+        /* Global Styles & Background */
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: navy; color: white;
+            overflow-x: hidden;
+        }
+
+        /* Page Layout */
+        .page {
+            display: none; min-height: 100vh; width: 100%;
+            flex-direction: column; align-items: center;
+            padding: 40px 20px; box-sizing: border-box; position: relative;
+        }
+        .active { display: flex; }
+
+        /* Typography */
+        .title-gold { color: gold; font-size: 72px; font-weight: bold; text-align: center; margin-top: auto; margin-bottom: 20px; }
+        .sub-title-gold { color: gold; font-size: 36px; text-align: center; margin: 0; }
+        .round-label { color: white; font-size: 24px; text-align: center; margin-top: 5px; }
+        .nav-link { color: white; font-size: 20px; cursor: pointer; text-decoration: none; margin: 0 15px; }
+        .nav-link:hover { color: gold; }
+        .footer-admin { position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 12px; color: white; }
+
+        /* Admin Header & UI */
+        .viewers-mode-header { position: absolute; top: 20px; right: 20px; color: gold; font-size: 20px; cursor: pointer; text-align: right; z-index: 100; }
+        .admin-modal {
+            display: none; position: fixed; top: 60px; right: 20px;
+            background: rgba(0,0,50,0.95); border: 2px solid gold; padding: 20px;
+            border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 101;
+        }
+        .admin-controls { background: rgba(255, 215, 0, 0.1); border: 1px dashed gold; padding: 10px; margin-top: 10px; display: none; border-radius: 5px; }
+        .admin-active .admin-controls { display: block; }
+
+        /* Tournament Grids */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 90%; margin: 30px 0; }
+        .group-box { border: 2px solid white; border-radius: 10px; padding: 15px; background: rgba(255,255,255,0.05); }
+        .group-title { font-size: 20px; color: white; border-bottom: 1px solid white; margin-bottom: 10px; padding-bottom: 5px; }
+        
+        /* Buttons */
+        .btn-gold { color: gold; font-size: 20px; background: transparent; border: 2px solid gold; padding: 10px 25px; cursor: pointer; margin: 10px; }
+        .btn-gold:hover { background: gold; color: navy; }
+        .bottom-nav { margin-top: auto; display: flex; justify-content: center; padding-top: 40px; }
+
+        /* Knockout Bracket Visual */
+        .bracket-container { display: flex; justify-content: space-around; width: 100%; margin: 40px 0; }
+        .bracket-match { border: 1px solid gold; padding: 10px; margin: 10px 0; width: 150px; text-align: center; font-size: 14px; }
+        
+        input[type="password"] { padding: 8px; border-radius: 4px; border: none; margin-bottom: 10px; width: 100%; }
+    </style>
+</head>
+<body class="viewer-view">
+
+    <div class="viewers-mode-header" onclick="toggleAdminMenu()">
+        <span id="modeDisplay">Viewers mode</span>
+        <div id="adminMenu" class="admin-modal" onclick="event.stopPropagation()">
+            <div onclick="setMode('viewer')" style="padding: 5px; cursor:pointer;">Viewers mode</div>
+            <div onclick="showPasswordField()" style="padding: 5px; cursor:pointer;">Admin mode</div>
+            <div id="passwordSection" style="display:none; margin-top:10px;">
+                <input type="password" id="adminPass" placeholder="Password">
+                <button onclick="verifyAdmin()" style="width:100%; cursor:pointer;">Enter</button>
+                <p id="adminError" style="color:red; font-size:12px; margin-top:5px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <section id="page1" class="page active">
+        <h1 class="title-gold">100 Girlfriends Cup</h1>
+        <div style="display: flex; justify-content: center;">
+            <span class="nav-link" onclick="switchPage('page2')">1st Round</span>
+            <span class="nav-link" onclick="switchPage('page3')">2nd Round</span>
+            <span class="nav-link" onclick="switchPage('page4')">Knockout</span>
+        </div>
+        <div class="footer-admin">Admin: Mysterious Newt</div>
+    </section>
+
+    <section id="page2" class="page">
+        <h2 class="sub-title-gold">100 Girlfriends Cup</h2>
+        <div class="round-label">1st Round</div>
+        <div class="grid-container" id="r1-groups">
+            </div>
+        <div style="text-align:center;">
+            <button class="btn-gold" onclick="alert('Voting is currently managed by Admin.')">Vote</button>
+            <button class="btn-gold" onclick="viewResults('r1')">Results</button>
+        </div>
+        <div class="bottom-nav">
+            <span class="nav-link" onclick="switchPage('page1')">Home</span>
+            <span class="nav-link" onclick="switchPage('page3')">2nd Round</span>
+            <span class="nav-link" onclick="switchPage('page4')">Knockout</span>
+        </div>
+    </section>
+
+    <section id="page3" class="page">
+        <h2 class="sub-title-gold">100 Girlfriends Cup</h2>
+        <div class="round-label">2nd Round</div>
+        <div class="grid-container" id="r2-groups">
+            </div>
+        <div style="text-align:center;">
+            <button class="btn-gold">Vote</button>
+            <button class="btn-gold" onclick="viewResults('r2')">Results</button>
+        </div>
+        <div class="bottom-nav">
+            <span class="nav-link" onclick="switchPage('page1')">Home</span>
+            <span class="nav-link" onclick="switchPage('page2')">1st Round</span>
+            <span class="nav-link" onclick="switchPage('page4')">Knockout</span>
+        </div>
+    </section>
+
+    <section id="page4" class="page">
+        <h2 class="sub-title-gold">100 Girlfriends Cup</h2>
+        <div class="round-label">Knockout</div>
+        
+        <div id="bracketArea" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            <div class="bracket-container">
+                <div><h4>Quarter Finals</h4><div class="bracket-match">QF 1</div><div class="bracket-match">QF 2</div><div class="bracket-match">QF 3</div><div class="bracket-match">QF 4</div></div>
+                <div><h4>Semi Finals</h4><div class="bracket-match" style="margin-top:40px;">SF 1 (Winner QF1/2)</div><div class="bracket-match" style="margin-top:40px;">SF 2 (Winner QF3/4)</div></div>
+                <div><h4>Final</h4><div class="bracket-match" style="margin-top:100px;">CHAMPIONSHIP</div></div>
+            </div>
+            <div id="finalWinnerDisplay" style="display:none; margin: 20px 0;">
+                <h1 class="title-gold" id="winnerName" style="margin:0;">WINNER NAME</h1>
+            </div>
+        </div>
+
+        <div style="text-align:center;">
+            <button class="btn-gold">Vote</button>
+            <button class="btn-gold">Results</button>
+        </div>
+        <div class="bottom-nav">
+            <span class="nav-link" onclick="switchPage('page1')">Home</span>
+            <span class="nav-link" onclick="switchPage('page2')">1st Round</span>
+            <span class="nav-link" onclick="switchPage('page3')">2nd Round</span>
+        </div>
+    </section>
+
+    <script>
+        // --- SYSTEM CONSTANTS ---
+        const ADMIN_PASS = "Saudi_18_100";
+        let isAdminMode = false;
+        let publicResults = { r1: false, r2: false, ko: false };
+
+        // --- NAVIGATION ---
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // --- ADMIN AUTHENTICATION ---
+        function toggleAdminMenu() {
+            const menu = document.getElementById('adminMenu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function showPasswordField() {
+            document.getElementById('passwordSection').style.display = 'block';
+        }
+
+        function verifyAdmin() {
+            const pass = document.getElementById('adminPass').value;
+            const err = document.getElementById('adminError');
+            if(pass === ADMIN_PASS) {
+                isAdminMode = true;
+                document.body.classList.add('admin-active');
+                document.getElementById('modeDisplay').innerText = "Admin mode";
+                document.getElementById('adminMenu').style.display = 'none';
+                renderTournamentContent();
+            } else {
+                err.innerText = "Oops! You're not the Admin.";
+            }
+        }
+
+        function setMode(mode) {
+            if(mode === 'viewer') {
+                isAdminMode = false;
+                document.body.classList.remove('admin-active');
+                document.getElementById('modeDisplay').innerText = "Viewers mode";
+                document.getElementById('adminMenu').style.display = 'none';
+                renderTournamentContent();
+            }
+        }
+
+        // --- TOURNAMENT LOGIC ---
+        function renderTournamentContent() {
+            // Render 1st Round
+            const r1 = document.getElementById('r1-groups');
+            r1.innerHTML = '';
+            ['A','B','C','D','E','F'].forEach(grp => {
+                r1.innerHTML += createGroupHTML(`Group ${grp}`, 6, 'r1');
+            });
+
+            // Render 2nd Round
+            const r2 = document.getElementById('r2-groups');
+            r2.innerHTML = '';
+            ['A','B','C','D'].forEach(grp => {
+                r2.innerHTML += createGroupHTML(`Group ${grp}`, 3, 'r2');
+            });
+        }
+
+        function createGroupHTML(name, count, roundKey) {
+            const isVisible = isAdminMode || publicResults[roundKey];
+            let html = `<div class="group-box"><div class="group-title">${name}</div>`;
+            
+            if(isAdminMode) {
+                html += `<div class="admin-controls">
+                    <label style="font-size:12px;"><input type="checkbox" onchange="togglePublic('${roundKey}')"> Public Results</label><br>
+                    <button style="font-size:10px;" onclick="alert('Group settings opened')">Rearrange</button>
+                    <button style="font-size:10px;" onclick="alert('Voting Opened for 24h')">Open Voting</button>
+                </div>`;
+            }
+
+            if(isVisible) {
+                html += `<div style="font-size:14px;">Rankings:<br>`;
+                for(let i=1; i<=count; i++) html += `${i}. Participant ${i} (0 W, 0 V)<br>`;
+                html += `</div>`;
+            } else {
+                html += `<div style="font-size:12px; color:gray;">Results hidden until voting ends.</div>`;
+            }
+            return html + `</div>`;
+        }
+
+        function togglePublic(key) {
+            publicResults[key] = !publicResults[key];
+            renderTournamentContent();
+        }
+
+        function viewResults(round) {
+            if(!isAdminMode && !publicResults[round]) {
+                alert("Results for this round are still being finalized by the Admin.");
+            } else {
+                renderTournamentContent();
+            }
+        }
+
+        // INITIALIZE
+        renderTournamentContent();
+    </script>
+</body>
+</html>
